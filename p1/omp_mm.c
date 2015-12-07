@@ -50,7 +50,7 @@ chunk = 10;                    /* set loop iteration chunk size */
 
   /*** Do matrix multiply sharing iterations on outer loop ***/
   /*** Display who does which iterations for demonstration purposes ***/
-  //printf("Thread %d starting matrix multiply...\n",tid);
+  printf("Thread %d starting matrix multiply...\n",tid);
   #pragma omp for schedule (static, chunk)
   for (i=0; i<NRA; i++)    
     {
@@ -71,6 +71,6 @@ chunk = 10;                    /* set loop iteration chunk size */
 /*   printf("\n"); */ 
 /*   } */
 /* printf("******************************************************\n"); */
-//printf ("Done.\n");
+printf ("Done.\n");
 
 }
