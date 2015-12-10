@@ -1,0 +1,9 @@
+
+p1 : Naive implementation of parallelism in openMP and haskell
+    The tasks are really simple and therefore the single-threaded execution has an edge over multiple threads.
+    The benefits of parallelism happen after >1000 tasks per thread per iteration.
+    The haskell seems to do better than openMP
+
+p2 : 
+
+
