@@ -10,7 +10,7 @@ static struct taskData {
   int* intArrays[NUM_OF_ARRAYS];
 } gl_taskData;
 
-void runtask()
+void runTasks()
 {
   for (int i = 0; i < NUM_OF_ARRAYS ; i++)
   {
