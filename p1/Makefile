@@ -1,6 +1,7 @@
 # This is haskell main running tasks
 main: main.hs task.c
-	ghc -O2 --make main.hs task.c -optc-fopenmp -optc-std=c11 \
+	ghc -O2 -threaded --make main.hs task.c \
+		-optc-fopenmp -optc-std=c11 \
 		-optc-static -optl-lgomp -optc-O3 -optl-L/lib64
 
 # This is the equivalent cpp main running tasks
