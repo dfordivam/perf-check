@@ -14,8 +14,8 @@
 // In an iteration the list of tasks is specified by 
 // a list of int in execTasks
 // This list is populated with random number before each iteration
-#define NUM_TASKS 1000
-#define NUM_ITERATIONS 10000
+#define NUM_TASKS 10000
+#define NUM_ITERATIONS 100
 
 // Variables to set Memory
 #define INT_ARRAY_SIZE 100
@@ -94,11 +94,13 @@ void runTasks_OpenMP()
 
 void heavyTask()
 {
-  int number = 7;
+  static int number = 7;
   for (int i = 0; i < HEAVY_LOOP ; i++)
   {
     number = number * number;
   }
+  // Some random code so that it does not get optimized
+  if (number > task_exec_count) number = 9;
 }
 
 // Threads for haskell
@@ -118,8 +120,8 @@ void runTasks_2()
 {
   for (int i = NUM_TASKS/4; i < NUM_TASKS/2 ; i++)
   {
-    // 20% chance
-    int isHeavy = (rand() % 5) == 0;
+    // 50% chance
+    int isHeavy = (rand() % 2) == 0;
     if (isHeavy) heavyTask();
     task1(gl_taskData.execTasks[i]);
   }

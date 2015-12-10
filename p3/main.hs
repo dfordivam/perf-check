@@ -22,9 +22,13 @@ foreign import ccall "initArrays" initArrays :: IO ()
 
 main = do
   initArrays
+  putStrLn "Single Thread"
   profileTask runTasks
+  putStrLn "OpenMP"
   profileTask runTasks_OpenMP
-  profileTask (runTasksForkIO 10000)
+  putStrLn "Haskell"
+  profileTask (runTasksForkIO 100)
+  putStrLn "Single Thread"
   profileTask runTasks
   putStrLn "Done"
 
