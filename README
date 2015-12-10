@@ -4,6 +4,15 @@ p1 : Naive implementation of parallelism in openMP and haskell
     The benefits of parallelism happen after >1000 tasks per thread per iteration.
     The haskell seems to do better than openMP
 
-p2 : 
+p2 : Tasks operate on random data.
+    Tasks are still simple (same as p1), but each iteration operates on random set of data.
+    Here openMP does very bad for NUM_TASK ~1000 (9x slower, haskell 2x slower)
+    For NUM_TASK 10000 per iteration haskell does better than single threaded, openMP is still 3x slower
+
+p3 : Unequal distribution of tasks in threads
+    For unequal distribution the number of tasks in each thread is same
+    But some threads will get additional heavy task randomly.
+    Here if we keep NUM_TASK 10000 then openMP performs slightly better than single thread
+    Haskell performs much better ~1.5x speedup on 3 cores
 
 
