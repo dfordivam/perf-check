@@ -14,13 +14,14 @@ foreign import ccall safe "runTasks_1" runTasks_1 :: IO ()
 foreign import ccall safe "runTasks_2" runTasks_2 :: IO ()
 foreign import ccall safe "runTasks_3" runTasks_3 :: IO ()
 foreign import ccall safe "runTasks_4" runTasks_4 :: IO ()
+foreign import ccall safe "generateExecTasks" generateExecTasks :: IO ()
 foreign import ccall safe "clearCount" clearCount :: IO ()
 foreign import ccall safe "printCount" printCount :: IO ()
 foreign import ccall "runTasks_OpenMP" runTasks_OpenMP :: IO ()
-foreign import ccall "initTasks" initTasks :: IO ()
+foreign import ccall "initArrays" initArrays :: IO ()
 
 main = do
-  initTasks
+  initArrays
   profileTask runTasks
   profileTask runTasks_OpenMP
   profileTask (runTasksForkIO 10000)
@@ -29,6 +30,7 @@ main = do
 
 runTasksForkIO :: Int -> IO ()
 runTasksForkIO i = do
+  generateExecTasks
   m1 <- newEmptyMVar
   m2 <- newEmptyMVar
   m3 <- newEmptyMVar
