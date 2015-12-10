@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define INT_ARRAY_SIZE 10000
-#define NUM_OF_ARRAYS 10000
+#define INT_ARRAY_SIZE 1000
+#define NUM_OF_ARRAYS 1000000
+#define NUM_ITERATIONS 100
 
 void task1(int* ptr);
 
@@ -12,19 +13,26 @@ static struct taskData {
 
 void runTasks()
 {
-  for (int i = 0; i < NUM_OF_ARRAYS ; i++)
-  {
-    task1(gl_taskData.intArrays[i]);
-  }
+    for (int j = 0; j < NUM_ITERATIONS ; j++){
+        for (int i = 0; i < NUM_OF_ARRAYS ; i++)
+        {
+            task1(gl_taskData.intArrays[i]);
+        }
+    }
 }
 
 void runTasks_OpenMP()
 {
-  #pragma omp for schedule (auto)
-  for (int i = 0; i < NUM_OF_ARRAYS ; i++)
-  {
-    task1(gl_taskData.intArrays[i]);
-  }
+  int chunk = 10;                    /* set loop iteration chunk size */
+/*** Spawn a parallel region explicitly scoping all variables ***/
+ #pragma omp parallel shared(chunk)
+    for (int j = 0; j < NUM_ITERATIONS ; j++){
+        #pragma omp for schedule (static, NUM_OF_ARRAYS/chunk) 
+        for (int i = 0; i < NUM_OF_ARRAYS ; i++)
+        {
+            task1(gl_taskData.intArrays[i]);
+        }
+    }
 }
 
 void initTasks()

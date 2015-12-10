@@ -5,7 +5,7 @@ main: main.hs task.c
 
 # This is the equivalent cpp main running tasks
 main_c : main.cpp task.c
-	g++ -O3 main.cpp task.c -o main_c
+	g++ -O3 -fopenmp main.cpp task.c -o main_c -std=c++11
 
 main_debug: main.hs task.c
 	ghc --make main.hs task.c -optc-fopenmp -optc-std=c11 \
