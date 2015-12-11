@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "main_stub.h"
 
 //#define USE_FOR_PRAGMA 1
 
@@ -17,9 +18,9 @@
 // This list is populated with random number before each iteration
 
 // Number of tasks in each delta
-#define NUM_TASKS 1000
+#define NUM_TASKS 10000
 // Number of deltas
-#define NUM_ITERATIONS 1000
+#define NUM_ITERATIONS 100
 
 // Variables to set Memory
 #define INT_ARRAY_SIZE 100
@@ -28,8 +29,11 @@
 #define HEAVY_LOOP 10000
 
 static struct taskData {
+  HsStablePtr globalDataPtr;
   int* intArrays[NUM_OF_ARRAYS];
   unsigned int execTasks[NUM_TASKS];
+  int globalDummyInt;
+  void (*addFunction)(HsStablePtr ptr, int val);
 } gl_taskData;
 
 // Counter to give some idea about task execution count
@@ -44,9 +48,13 @@ void runTasks_2();
 void runTasks_3();
 void runTasks_4();
 
+void addToGlobalCSide(HsStablePtr ptr, int val);
+void addToGlobalLockedCSide(HsStablePtr ptr, int val);
+
 // Single threaded execution
 void runTasks()
 {
+  gl_taskData.addFunction = addToGlobalCSide;
     for (int j = 0; j < NUM_ITERATIONS ; j++){
       generateExecTasks();
       runTasks_1();
@@ -54,11 +62,13 @@ void runTasks()
       runTasks_3();
       runTasks_4();
     }
+  gl_taskData.addFunction = addToGlobalLocked;
 }
 
 // OpenMP execution
 void runTasks_OpenMP()
 {
+  gl_taskData.addFunction = addToGlobalLockedCSide;
   int chunk = 4;                    /* set loop iteration chunk size */
 /*** Spawn a parallel region explicitly scoping all variables ***/
  #pragma omp parallel shared(chunk)
@@ -95,6 +105,7 @@ void runTasks_OpenMP()
       }
 #endif
     }
+  gl_taskData.addFunction = addToGlobalLocked;
 }
 
 void heavyTask()
@@ -163,8 +174,10 @@ void generateExecTasks()
 }
 
 // Initializes arrays on the heap
-void initArrays()
+void initArrays(HsStablePtr ptr)
 {
+  gl_taskData.addFunction = addToGlobal;
+  gl_taskData.globalDataPtr = ptr;
   printf("initArrays\n");
   for (int i = 0; i < NUM_OF_ARRAYS ; i++)
   {
@@ -182,17 +195,31 @@ void task1(unsigned int value)
   {
     ptr[i] = ptr[i] + ptr[i+1];
   }
+  (*(gl_taskData.addFunction))(gl_taskData.globalDataPtr, ptr[0]);
+}
+
+void addToGlobalLockedCSide(HsStablePtr ptr, int val)
+{
+#pragma omp atomic
+  gl_taskData.globalDummyInt += 1;
+}
+
+void addToGlobalCSide(HsStablePtr ptr, int val)
+{
+  gl_taskData.globalDummyInt += val;
 }
 
 // -------------------------------------------------
 // MISC APIs
 void clearCount()
 {
+  gl_taskData.globalDummyInt = 0;
   task_exec_count = 0;
 }
 
 void printCount()
 {
   printf("Task Exec Count = %d\n", task_exec_count);
+  printf("Locked Task Exec Count = %d\n", gl_taskData.globalDummyInt);
 }
 
