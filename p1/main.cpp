@@ -12,7 +12,9 @@ void profileTask(void (*ptr)());
 int main()
 {
   initTasks();
+  printf("Single Thread\n");
   profileTask(runTasks);
+  printf("OpenMP\n");
   profileTask(runTasks_OpenMP);
   printf("Done\n");
 }

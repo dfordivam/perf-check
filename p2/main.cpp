@@ -3,7 +3,7 @@
 #include <chrono>
 #include <time.h>
 
-void initTasks();
+void initArrays();
 void runTasks_OpenMP();
 void runTasks();
 
@@ -11,8 +11,10 @@ void profileTask(void (*ptr)());
 
 int main()
 {
-  initTasks();
+  initArrays();
+  printf("Single Thread\n");
   profileTask(runTasks);
+  printf("OpenMP\n");
   profileTask(runTasks_OpenMP);
   printf("Done\n");
 }

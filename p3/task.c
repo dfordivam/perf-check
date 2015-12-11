@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 //#define USE_FOR_PRAGMA 1
+
 // Design details
 // We need to do 'NUM_TASKS' tasks in each iteration.
 // After each iteration the threads need to synchronize.
@@ -61,6 +62,7 @@ void runTasks_OpenMP()
   int chunk = 4;                    /* set loop iteration chunk size */
 /*** Spawn a parallel region explicitly scoping all variables ***/
  #pragma omp parallel shared(chunk)
+  // XXX For pragma is not same as runTasks, because there is no heavyTask
     for (int j = 0; j < NUM_ITERATIONS ; j++){
       generateExecTasks();
 #ifdef USE_FOR_PRAGMA
