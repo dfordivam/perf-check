@@ -15,4 +15,10 @@ p3 : Unequal distribution of tasks in threads
     Here if we keep NUM_TASK 10000 then openMP performs slightly better than single thread
     Haskell performs much better ~1.5x speedup on 3 cores
 
+p4 : Every Task does an atomic operation in the end (Increment a counter)
+    Here openMP is 2x slow with NUM_TASK 1000, 1x with 10000
+    Haskell has a callback routine with atomicModifyIORef
+    It is 4x slower with 1000, and 3.5x slower with 10000
+    So most of degradation is due to callback into haskell
+
 
