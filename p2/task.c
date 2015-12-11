@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//#define USE_FOR_PRAGMA 1
+#define USE_FOR_PRAGMA 1
 // Design details
 // We need to do 'NUM_TASKS' tasks in each iteration.
 // After each iteration the threads need to synchronize.
@@ -14,8 +14,8 @@
 // In an iteration the list of tasks is specified by 
 // a list of int in execTasks
 // This list is populated with random number before each iteration
-#define NUM_TASKS 1000
-#define NUM_ITERATIONS 10000
+#define NUM_TASKS 10000
+#define NUM_ITERATIONS 1000
 
 // Variables to set Memory
 #define INT_ARRAY_SIZE 100
@@ -53,13 +53,13 @@ void runTasks()
 // OpenMP execution
 void runTasks_OpenMP()
 {
-  int chunk = 1;                    /* set loop iteration chunk size */
+  int chunk = 4;                    /* set loop iteration chunk size */
 /*** Spawn a parallel region explicitly scoping all variables ***/
  #pragma omp parallel shared(chunk)
     for (int j = 0; j < NUM_ITERATIONS ; j++){
       generateExecTasks();
 #ifdef USE_FOR_PRAGMA
-        #pragma omp for schedule (static, NUM_TASKS/chunk) 
+        #pragma omp for nowait schedule  (static) ordered
         for (int i = 0; i < NUM_TASKS ; i++)
         {
             task1(gl_taskData.execTasks[i]);

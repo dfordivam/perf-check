@@ -24,7 +24,7 @@ main = do
   initArrays
   profileTask runTasks
   profileTask runTasks_OpenMP
-  profileTask (runTasksForkIO 10000)
+  profileTask (runTasksForkIO 1000)
   profileTask runTasks
   putStrLn "Done"
 
