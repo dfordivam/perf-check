@@ -34,7 +34,7 @@ main = do
   putStrLn "OpenMP"
   profileTask gd runTasks_OpenMP
   putStrLn "Haskell"
-  profileTask gd (runTasksForkIO 100)
+  profileTask gd (runTasksForkIO 1000)
   putStrLn "Single Thread"
   profileTask gd runTasks
   putStrLn "Done"

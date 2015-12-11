@@ -22,4 +22,16 @@ p4 : Every Task does an atomic operation in the end (Increment a counter)
     So most of degradation is due to callback into haskell
     Note: With MVar the haskell just stops running. (>100x slower?)
 
+p5 : More realistic example
+    1. Task reads/write only 10% of memory of the array
+    2. Number of arrays is 200k 
+        (should be more but my system's memory is limited)
+    3. Array size is 1k
+        (should be more but my system's memory is limited)
+    There are interesting things here
+    OpenMP still performs bad compared to single,
+    but haskell is doing good and looks promising.
 
+    Note : Here I removed the callback of haskell and used
+    openMP atomic instead. Haskell callback is an overkill
+    to do for each task

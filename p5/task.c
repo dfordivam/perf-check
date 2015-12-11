@@ -20,13 +20,13 @@
 // Number of tasks in each delta
 #define NUM_TASKS 10000
 // Number of deltas
-#define NUM_ITERATIONS 100
+#define NUM_ITERATIONS 1000
 
 // Variables to set Memory
-#define INT_ARRAY_SIZE 100
-#define NUM_OF_ARRAYS 10000
+#define INT_ARRAY_SIZE 1000
+#define NUM_OF_ARRAYS 200000
 
-#define HEAVY_LOOP 10000
+#define HEAVY_LOOP 1000
 
 static struct taskData {
   HsStablePtr globalDataPtr;
@@ -105,9 +105,10 @@ void runTasks_OpenMP()
       }
 #endif
     }
-  gl_taskData.addFunction = addToGlobalLocked;
+  //gl_taskData.addFunction = addToGlobalLocked;
 }
 
+// This is computation heavy task
 void heavyTask()
 {
   static int number = 7;
@@ -125,8 +126,8 @@ void runTasks_1()
 {
   for (int i = 0; i < NUM_TASKS/4 ; i++)
   {
-    // 10% chance
-    int isHeavy = (rand() % 10) == 0;
+    // 10%
+    int isHeavy = (i % 10) == 0;
     if (isHeavy) heavyTask();
     task1(gl_taskData.execTasks[i]);
   }
@@ -136,8 +137,8 @@ void runTasks_2()
 {
   for (int i = NUM_TASKS/4; i < NUM_TASKS/2 ; i++)
   {
-    // 50% chance
-    int isHeavy = (rand() % 2) == 0;
+    // 50%
+    int isHeavy = (i % 2) == 0;
     if (isHeavy) heavyTask();
     task1(gl_taskData.execTasks[i]);
   }
@@ -147,8 +148,8 @@ void runTasks_3()
 {
   for (int i = NUM_TASKS/2; i < 3*(NUM_TASKS/4) ; i++)
   {
-    // 5% chance
-    int isHeavy = (rand() % 20) == 0;
+    // 5%
+    int isHeavy = (i % 20) == 0;
     if (isHeavy) heavyTask();
     task1(gl_taskData.execTasks[i]);
   }
@@ -158,8 +159,8 @@ void runTasks_4()
 {
   for (int i = 3*(NUM_TASKS/4); i < NUM_TASKS ; i++)
   {
-    // 2% chance
-    int isHeavy = (rand() % 50) == 0;
+    // 2%
+    int isHeavy = (i % 50) == 0;
     if (isHeavy) heavyTask();
     task1(gl_taskData.execTasks[i]);
   }
@@ -169,7 +170,8 @@ void generateExecTasks()
 {
   for (int i = 0; i < NUM_TASKS ; i++)
   {
-    gl_taskData.execTasks[i] = rand() % NUM_OF_ARRAYS;
+    //gl_taskData.execTasks[i] = (NUM_OF_ARRAYS * i)/NUM_TASKS;
+    gl_taskData.execTasks[i] = (rand()) % NUM_OF_ARRAYS;
   }
 }
 
@@ -186,12 +188,12 @@ void initArrays(HsStablePtr ptr)
   }
 }
 
-// Task with an array of integers
+// Task - This reads a part of the array
 void task1(unsigned int value)
 {
   int* ptr = gl_taskData.intArrays[value];
   task_exec_count++;
-  for (int i = 0; i < INT_ARRAY_SIZE; i++)
+  for (int i = 0; i < INT_ARRAY_SIZE/10; i++)
   {
     ptr[i] = ptr[i] + ptr[i+1];
   }
