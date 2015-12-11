@@ -8,6 +8,7 @@ void runTasks_OpenMP();
 void runTasks();
 
 void profileTask(void (*ptr)());
+void generateExecTasks();
 
 int main()
 {
@@ -21,6 +22,7 @@ int main()
 
 void profileTask(void (*ptr)())
 {
+  generateExecTasks();
   std::chrono::time_point<std::chrono::system_clock> start, end;
   start = std::chrono::system_clock::now();
   clock_t t;
