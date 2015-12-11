@@ -27,14 +27,13 @@ main = do
   putStrLn "OpenMP"
   profileTask runTasks_OpenMP
   putStrLn "Haskell"
-  profileTask (runTasksForkIO 1000)
+  profileTask (runTasksForkIO 10)
   putStrLn "Single Thread"
   profileTask runTasks
   putStrLn "Done"
 
 runTasksForkIO :: Int -> IO ()
 runTasksForkIO i = do
-  generateExecTasks
   m1 <- newEmptyMVar
   m2 <- newEmptyMVar
   m3 <- newEmptyMVar
@@ -51,6 +50,7 @@ runTasksForkIO i = do
 
 
 profileTask task = do
+  generateExecTasks
   clearCount
   startTime <- getCurrentTime
   task

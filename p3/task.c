@@ -17,9 +17,9 @@
 // This list is populated with random number before each iteration
 
 // Number of tasks in each delta
-#define NUM_TASKS 1000
+#define NUM_TASKS 100000
 // Number of deltas
-#define NUM_ITERATIONS 1000
+#define NUM_ITERATIONS 10
 
 // Variables to set Memory
 #define INT_ARRAY_SIZE 100
@@ -48,7 +48,7 @@ void runTasks_4();
 void runTasks()
 {
     for (int j = 0; j < NUM_ITERATIONS ; j++){
-      generateExecTasks();
+      //generateExecTasks();
       runTasks_1();
       runTasks_2();
       runTasks_3();
@@ -64,7 +64,7 @@ void runTasks_OpenMP()
  #pragma omp parallel shared(chunk)
   // XXX For pragma is not same as runTasks, because there is no heavyTask
     for (int j = 0; j < NUM_ITERATIONS ; j++){
-      generateExecTasks();
+      //generateExecTasks();
 #ifdef USE_FOR_PRAGMA
         #pragma omp for schedule (static, NUM_TASKS/chunk) 
         for (int i = 0; i < NUM_TASKS ; i++)

@@ -20,5 +20,6 @@ p4 : Every Task does an atomic operation in the end (Increment a counter)
     Haskell has a callback routine with atomicModifyIORef
     It is 4x slower with 1000, and 3.5x slower with 10000
     So most of degradation is due to callback into haskell
+    Note: With MVar the haskell just stops running. (>100x slower?)
 
 
