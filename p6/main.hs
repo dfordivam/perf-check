@@ -11,7 +11,7 @@ import Control.Concurrent
 import Data.IORef
 import Data.Time.Clock
 
-numOfIteration = 1000
+numOfIteration = 10000
 
 foreign import ccall safe "runTasks" runTasks :: IO ()
 foreign import ccall safe "runTasks_1" runTasks_1 :: CInt -> IO ()

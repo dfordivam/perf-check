@@ -17,9 +17,9 @@
 // So distribution of tasks to threads is random
 
 // Number of tasks in each delta
-#define NUM_TASKS 10000
+#define NUM_TASKS 1000
 // Number of deltas
-#define NUM_ITERATIONS 1000
+#define NUM_ITERATIONS 10000
 
 // Variables to set Memory
 #define INT_ARRAY_SIZE 1000
@@ -28,7 +28,8 @@
 #define HEAVY_LOOP 1000
 
 // Controls How many arrays are accessed by task
-#define TASK_LOCALIZATION 1
+// This is to change how much memory is accessed
+#define TASK_LOCALIZATION 2
 
 static struct taskData {
   HsStablePtr globalDataPtr;
@@ -53,10 +54,10 @@ void generateExecTasks();
 
 // Functions which execute equal number of tasks, but include
 // some heavyTask in between.
-void runTasks_1();
-void runTasks_2();
-void runTasks_3();
-void runTasks_4();
+void runTasks_1(int);
+void runTasks_2(int);
+void runTasks_3(int);
+void runTasks_4(int);
 
 // Counters to see the effect of doing atmoic operation
 // after every task execution

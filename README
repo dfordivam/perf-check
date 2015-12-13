@@ -35,3 +35,20 @@ p5 : More realistic example
     Note : Here I removed the callback of haskell and used
     openMP atomic instead. Haskell callback is an overkill
     to do for each task
+
+p6 : Task is more realistic. Its access of memory is non contiguous
+    Important finding: If the array of execTasks (for all iterations)
+    is known before the openMP iterations start, then there is a 
+    significant speedup (upto 1.8x on 3 cores).
+    (Though this scenario is un-realistic as the next
+    set of execution tasks is not known beforehand)
+
+    Other changes : Task access localization- There is a provision
+    to limit the task on either half, one-third, etc. arrays
+    This is essential as the real world tasks (in an iteration)
+    are limited to a part of heap memory.
+
+    Result Comparison- Added some infrastructure to compare the result
+    with single threaded run. The openMP with single core gives correct result.
+    Haskell on the other hand always cause thread race and mismatch in result.
+
