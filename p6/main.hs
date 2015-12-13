@@ -11,11 +11,13 @@ import Control.Concurrent
 import Data.IORef
 import Data.Time.Clock
 
+numOfIteration = 1000
+
 foreign import ccall safe "runTasks" runTasks :: IO ()
-foreign import ccall safe "runTasks_1" runTasks_1 :: IO ()
-foreign import ccall safe "runTasks_2" runTasks_2 :: IO ()
-foreign import ccall safe "runTasks_3" runTasks_3 :: IO ()
-foreign import ccall safe "runTasks_4" runTasks_4 :: IO ()
+foreign import ccall safe "runTasks_1" runTasks_1 :: CInt -> IO ()
+foreign import ccall safe "runTasks_2" runTasks_2 :: CInt -> IO ()
+foreign import ccall safe "runTasks_3" runTasks_3 :: CInt -> IO ()
+foreign import ccall safe "runTasks_4" runTasks_4 :: CInt -> IO ()
 foreign import ccall safe "runTasks_OpenMP" runTasks_OpenMP :: IO ()
 
 foreign import ccall safe "generateExecTasks" generateExecTasks:: IO ()
@@ -38,7 +40,7 @@ main = do
 
   putStrLn "\tHaskell"
   initArrays
-  profileTask gd (runTasksForkIO 1000)
+  profileTask gd (runTasksForkIO 1)
   compareTaskResultWithReference
 
   putStrLn "\tOpenMP"
@@ -62,21 +64,26 @@ doInit = do
   doInitialization sptr
   return gd
 
-runTasksForkIO :: Int -> IO ()
+runTasksForkIO :: CInt -> IO ()
 runTasksForkIO i = do
   m1 <- newEmptyMVar
   m2 <- newEmptyMVar
   m3 <- newEmptyMVar
   m4 <- newEmptyMVar
-  forkFinally runTasks_1 ((\x -> putMVar m1 ()))
-  forkFinally runTasks_2 ((\x -> putMVar m2 ()))
-  forkFinally runTasks_3 ((\x -> putMVar m3 ()))
-  forkFinally runTasks_4 ((\x -> putMVar m4 ()))
+  let j = numOfIteration - i
+  forkFinally (runTasks_1 j)
+    ((\x -> putMVar m1 ()))
+  forkFinally (runTasks_2 j)
+    ((\x -> putMVar m2 ()))
+  forkFinally (runTasks_3 j)
+    ((\x -> putMVar m3 ()))
+  forkFinally (runTasks_4 j)
+    ((\x -> putMVar m4 ()))
   _ <- takeMVar m1
   _ <- takeMVar m2
   _ <- takeMVar m3
   _ <- takeMVar m4
-  if (i == 1) then return () else (runTasksForkIO (i-1))
+  if (i == numOfIteration) then return () else (runTasksForkIO (i+1))
 
 
 profileTask gd task = do

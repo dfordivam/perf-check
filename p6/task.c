@@ -38,7 +38,7 @@ static struct taskData {
   int referenceResult[NUM_OF_ARRAYS];
   int taskResult[NUM_OF_ARRAYS];
 
-  unsigned int execTasks[NUM_TASKS];
+  unsigned int execTasks[NUM_ITERATIONS][NUM_TASKS];
 
   int counterValue;
   void (*counterFunction)(HsStablePtr ptr, int val);
@@ -67,10 +67,10 @@ void counterFunctionLockedCSide(HsStablePtr ptr, int val);
 void runTasks()
 {
     for (int j = 0; j < NUM_ITERATIONS ; j++){
-      runTasks_1();
-      runTasks_2();
-      runTasks_3();
-      runTasks_4();
+      runTasks_1(j);
+      runTasks_2(j);
+      runTasks_3(j);
+      runTasks_4(j);
     }
   static int getReferenceResult = 1;
   if (getReferenceResult) {
@@ -92,16 +92,16 @@ void runTasks_OpenMP()
  #pragma omp single 
       {
         #pragma omp task
-        runTasks_1();
+        runTasks_1(j);
 
         #pragma omp task
-        runTasks_2();
+        runTasks_2(j);
 
         #pragma omp task
-        runTasks_3();
+        runTasks_3(j);
 
         #pragma omp task
-        runTasks_4();
+        runTasks_4(j);
 
         #pragma omp taskwait
       }
@@ -122,57 +122,59 @@ void heavyTask()
 
 // Threads for haskell
 // 4 Tasks working on different arrays
-void runTasks_1()
+void runTasks_1(int iteration)
 {
   for (int i = 0; i < NUM_TASKS/4 ; i++)
   {
     // 10%
     int isHeavy = (i % 10) == 0;
     if (isHeavy) heavyTask();
-    task1(gl_taskData.execTasks[i]);
+    task1(gl_taskData.execTasks[iteration][i]);
   }
 }
 
-void runTasks_2()
+void runTasks_2(int iteration)
 {
   for (int i = NUM_TASKS/4; i < NUM_TASKS/2 ; i++)
   {
     // 50%
     int isHeavy = (i % 2) == 0;
     if (isHeavy) heavyTask();
-    task1(gl_taskData.execTasks[i]);
+    task1(gl_taskData.execTasks[iteration][i]);
   }
 }
 
-void runTasks_3()
+void runTasks_3(int iteration)
 {
   for (int i = NUM_TASKS/2; i < 3*(NUM_TASKS/4) ; i++)
   {
     // 5%
     int isHeavy = (i % 20) == 0;
     if (isHeavy) heavyTask();
-    task1(gl_taskData.execTasks[i]);
+    task1(gl_taskData.execTasks[iteration][i]);
   }
 }
 
-void runTasks_4()
+void runTasks_4(int iteration)
 {
   for (int i = 3*(NUM_TASKS/4); i < NUM_TASKS ; i++)
   {
     // 2%
     int isHeavy = (i % 50) == 0;
     if (isHeavy) heavyTask();
-    task1(gl_taskData.execTasks[i]);
+    task1(gl_taskData.execTasks[iteration][i]);
   }
 }
 
 void generateExecTasks()
 {
   printf("generateExecTasks\n");
-  for (int i = 0; i < NUM_TASKS ; i++)
-  {
-    //gl_taskData.execTasks[i] = (NUM_OF_ARRAYS * i)/NUM_TASKS;
-    gl_taskData.execTasks[i] = ((rand() % NUM_OF_ARRAYS)/TASK_LOCALIZATION)*TASK_LOCALIZATION;
+  for (int j = 0; j < NUM_ITERATIONS ; j++){
+    for (int i = 0; i < NUM_TASKS ; i++)
+    {
+      //gl_taskData.execTasks[i] = (NUM_OF_ARRAYS * i)/NUM_TASKS;
+      gl_taskData.execTasks[j][i] = ((rand() % NUM_OF_ARRAYS)/TASK_LOCALIZATION)*TASK_LOCALIZATION;
+    }
   }
 }
 
