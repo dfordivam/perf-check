@@ -39,7 +39,7 @@ p5 : More realistic example
 p6 : Task is more realistic. Its access of memory is non contiguous
     Important finding: If the array of execTasks (for all iterations)
     is known before the openMP iterations start, then there is a 
-    significant speedup (upto 1.8x on 3 cores).
+    significant speedup (upto 1.5x on 3 cores).
     (Though this scenario is un-realistic as the next
     set of execution tasks is not known beforehand)
 
@@ -52,3 +52,4 @@ p6 : Task is more realistic. Its access of memory is non contiguous
     with single threaded run. The openMP with single core gives correct result.
     Haskell on the other hand always cause thread race and mismatch in result.
 
+p7 : 

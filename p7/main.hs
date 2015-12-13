@@ -20,6 +20,8 @@ foreign import ccall safe "runTasks_3" runTasks_3 :: CInt -> IO ()
 foreign import ccall safe "runTasks_4" runTasks_4 :: CInt -> IO ()
 foreign import ccall safe "runTasks_OpenMP" runTasks_OpenMP :: IO ()
 
+foreign import ccall safe "initExecTaskCurrent" initExecTaskCurrent :: CInt -> IO ()
+
 foreign import ccall safe "generateExecTasks" generateExecTasks:: IO ()
 foreign import ccall safe "compareTaskResultWithReference" compareTaskResultWithReference :: IO ()
 foreign import ccall safe "initArrays" initArrays :: IO ()
@@ -66,11 +68,12 @@ doInit = do
 
 runTasksForkIO :: CInt -> IO ()
 runTasksForkIO i = do
+  let j = i - 1
+  initExecTaskCurrent j
   m1 <- newEmptyMVar
   m2 <- newEmptyMVar
   m3 <- newEmptyMVar
   m4 <- newEmptyMVar
-  let j = numOfIteration - i
   forkFinally (runTasks_1 j)
     ((\x -> putMVar m1 ()))
   forkFinally (runTasks_2 j)

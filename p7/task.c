@@ -39,6 +39,7 @@ static struct taskData {
   int referenceResult[NUM_OF_ARRAYS];
   int taskResult[NUM_OF_ARRAYS];
 
+  unsigned int execTasksCurrent[NUM_TASKS];
   unsigned int execTasks[NUM_ITERATIONS][NUM_TASKS];
 
   int counterValue;
@@ -68,6 +69,7 @@ void counterFunctionLockedCSide(HsStablePtr ptr, int val);
 void runTasks()
 {
     for (int j = 0; j < NUM_ITERATIONS ; j++){
+      initExecTaskCurrent(j);
       runTasks_1(j);
       runTasks_2(j);
       runTasks_3(j);
@@ -89,6 +91,7 @@ void runTasks_OpenMP()
 /*** Spawn a parallel region explicitly scoping all variables ***/
  #pragma omp parallel shared(chunk)
   for (int j = 0; j < NUM_ITERATIONS ; j++){
+      initExecTaskCurrent(j);
 
  #pragma omp single 
       {
@@ -130,7 +133,7 @@ void runTasks_1(int iteration)
     // 10%
     int isHeavy = (i % 10) == 0;
     if (isHeavy) heavyTask();
-    task1(gl_taskData.execTasks[iteration][i]);
+    task1(gl_taskData.execTasksCurrent[i]);
   }
 }
 
@@ -141,7 +144,7 @@ void runTasks_2(int iteration)
     // 50%
     int isHeavy = (i % 2) == 0;
     if (isHeavy) heavyTask();
-    task1(gl_taskData.execTasks[iteration][i]);
+    task1(gl_taskData.execTasksCurrent[i]);
   }
 }
 
@@ -152,7 +155,7 @@ void runTasks_3(int iteration)
     // 5%
     int isHeavy = (i % 20) == 0;
     if (isHeavy) heavyTask();
-    task1(gl_taskData.execTasks[iteration][i]);
+    task1(gl_taskData.execTasksCurrent[i]);
   }
 }
 
@@ -163,7 +166,7 @@ void runTasks_4(int iteration)
     // 2%
     int isHeavy = (i % 50) == 0;
     if (isHeavy) heavyTask();
-    task1(gl_taskData.execTasks[iteration][i]);
+    task1(gl_taskData.execTasksCurrent[i]);
   }
 }
 
@@ -193,8 +196,8 @@ void doInitialization(HsStablePtr ptr)
     gl_taskData.intArrays[i] = 
       (int*) malloc(sizeof(int)*INT_ARRAY_SIZE);
   }
-  initArrays();
   generateExecTasks();
+  initArrays();
 }
 
 // Initializes arrays with initValue
@@ -207,10 +210,14 @@ void initArrays()
   }
 }
 
+void initExecTaskCurrent(int j)
+{
+  memcpy(gl_taskData.execTasksCurrent, gl_taskData.execTasks[j],
+      NUM_TASKS*sizeof(int));
+}
+
 // Task - This reads a part of the array
 // And produces a result by adding
-// Important - This task should produce the same result
-// i
 void task1(unsigned int value)
 {
   int* ptr = gl_taskData.intArrays[value];
