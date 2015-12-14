@@ -57,3 +57,8 @@ p6 : Task is more realistic. Its access of memory is non contiguous
 
 p7 : Same as p6, but execTasks are 'created'(actually copied) for each iteration
     
+p8 : Compare and swap mechanism in each task to check if values are valid
+    This resulted in 2.5x degradation in single thread performance
+    and with 3 cores 2x slowdown compared to single-thread version without CAS.
+
+
