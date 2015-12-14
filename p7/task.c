@@ -192,7 +192,7 @@ void generateExecTasks()
 }
 
 // Initialize array with value 1
-static int intArrayInitValue[INT_ARRAY_SIZE] = { [0 ... (INT_ARRAY_SIZE-1)] = 1};
+//static int intArrayInitValue[INT_ARRAY_SIZE] = { [0 ... (INT_ARRAY_SIZE-1)] = 1};
 
 // Allocate arrays and set global variable values
 void doInitialization(HsStablePtr ptr)
@@ -215,7 +215,9 @@ void initArrays()
   printf("Init Arrays\n");
   for (int i = 0; i < NUM_OF_ARRAYS ; i++)
   {
-    memcpy(gl_taskData.intArrays[i], intArrayInitValue, sizeof(int)*INT_ARRAY_SIZE);
+    for (int j = 0 ; j < INT_ARRAY_SIZE; j++)
+      gl_taskData.intArrays[i][j] = 1;
+//    memcpy(gl_taskData.intArrays[i], intArrayInitValue, sizeof(int)*INT_ARRAY_SIZE);
   }
 }
 
