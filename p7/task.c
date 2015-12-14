@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#ifdef HASKELL
 #include "main_stub.h"
+#else
+typedef void * HsStablePtr;
+#endif
 
 // Design details
 // We need to do 'NUM_TASKS' tasks in each iteration.
@@ -64,6 +70,9 @@ void runTasks_4(int);
 // after every task execution
 void counterFunctionCSide(HsStablePtr ptr, int val);
 void counterFunctionLockedCSide(HsStablePtr ptr, int val);
+
+void initExecTaskCurrent(int);
+void initArrays();
 
 // Single threaded execution
 void runTasks()

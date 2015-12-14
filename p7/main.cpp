@@ -6,12 +6,13 @@
 void initArrays();
 void runTasks_OpenMP();
 void runTasks();
+void doInitialization(void* );
 
 void profileTask(void (*ptr)());
 
 int main()
 {
-  initArrays();
+  doInitialization(NULL);
   printf("Single Thread\n");
   profileTask(runTasks);
   printf("OpenMP\n");
@@ -21,6 +22,7 @@ int main()
 
 void profileTask(void (*ptr)())
 {
+  initArrays();
   std::chrono::time_point<std::chrono::system_clock> start, end;
   start = std::chrono::system_clock::now();
   clock_t t;
