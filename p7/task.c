@@ -98,10 +98,10 @@ void runTasks_OpenMP()
 {
   int chunk = 4;                    /* set loop iteration chunk size */
 /*** Spawn a parallel region explicitly scoping all variables ***/
- #pragma omp parallel shared(chunk)
   for (int j = 0; j < NUM_ITERATIONS ; j++){
       initExecTaskCurrent(j);
 
+ #pragma omp parallel shared(chunk)
  #pragma omp single 
       {
         #pragma omp task
