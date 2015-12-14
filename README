@@ -28,9 +28,12 @@ p5 : More realistic example
         (should be more but my system's memory is limited)
     3. Array size is 1k
         (should be more but my system's memory is limited)
-    There are interesting things here
-    OpenMP still performs bad compared to single,
-    but haskell is doing good and looks promising.
+
+    The openMP parallel pragma should come just before the execution
+    of parallel blocks. If we call generateExecTask inside the parallel
+    pragma region, then it can cause degradation of upto 1.5-2x
+
+    Here performance of openMP and haskell are similar
 
     Note : Here I removed the callback of haskell and used
     openMP atomic instead. Haskell callback is an overkill
@@ -52,4 +55,5 @@ p6 : Task is more realistic. Its access of memory is non contiguous
     with single threaded run. The openMP with single core gives correct result.
     Haskell on the other hand always cause thread race and mismatch in result.
 
-p7 : 
+p7 : Same as p6, but execTasks are 'created'(actually copied) for each iteration
+    
