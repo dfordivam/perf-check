@@ -71,18 +71,11 @@ void runTasks_OpenMP()
   gl_taskData.addFunction = addToGlobalLockedCSide;
   int chunk = 4;                    /* set loop iteration chunk size */
 /*** Spawn a parallel region explicitly scoping all variables ***/
- #pragma omp parallel shared(chunk)
   // XXX For pragma is not same as runTasks, because there is no heavyTask
     for (int j = 0; j < NUM_ITERATIONS ; j++){
       generateExecTasks();
-#ifdef USE_FOR_PRAGMA
-        #pragma omp for schedule (static, NUM_TASKS/chunk) 
-        for (int i = 0; i < NUM_TASKS ; i++)
-        {
-            task1(gl_taskData.execTasks[i]);
-        }
-#else
-#pragma omp single 
+ #pragma omp parallel shared(chunk)
+  #pragma omp single 
       {
         #pragma omp task
         runTasks_1();
@@ -103,7 +96,6 @@ void runTasks_OpenMP()
 
         #pragma omp taskwait
       }
-#endif
     }
   //gl_taskData.addFunction = addToGlobalLocked;
 }
