@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define HASKELL 1
+//#define HASKELL 1
 #ifdef HASKELL
 #include "main_stub.h"
 #else
@@ -30,7 +30,7 @@ typedef void * HsStablePtr;
 
 // Variables to set Memory
 #define INT_ARRAY_SIZE 1000
-#define NUM_OF_ARRAYS 200000
+#define NUM_OF_ARRAYS 2000
 
 #define HEAVY_LOOP 1000
 
@@ -228,12 +228,14 @@ void initExecTaskCurrent(int j)
       NUM_TASKS*sizeof(int));
 }
 
+// Number of issues due to multi-threading
+static int issue_count = 0;
+
 // Task - This reads a part of the array
 // And produces a result by adding
-void task1(unsigned int value)
+void task1_unsafe(unsigned int value)
 {
   int* ptr = gl_taskData.intArrays[value];
-  task_exec_count++;
   int result = 0;
   int end = (INT_ARRAY_SIZE/10);
   for (int i = 0; i < end; i++)
@@ -242,10 +244,61 @@ void task1(unsigned int value)
     result += ptr[i];
   }
 
-  gl_taskData.taskResult[value] = result;
+  int* resultLoc = &(gl_taskData.taskResult[value]);
+  {
+    #pragma omp atomic write
+    *resultLoc = result;
+  }
 
   (*(gl_taskData.counterFunction))(gl_taskData.globalDataPtr, ptr[0]);
 }
+
+void task1(unsigned int value)
+{
+  int* ptr = gl_taskData.intArrays[value];
+  int result = 0;
+  int end = (INT_ARRAY_SIZE/10);
+
+  // Capture original data here
+  int dataOrig[INT_ARRAY_SIZE/10];
+  int data[INT_ARRAY_SIZE/10];
+  {
+    #pragma omp critical
+    memcpy(data, ptr, sizeof(int)*(INT_ARRAY_SIZE/10));
+  }
+  memcpy(dataOrig, data, sizeof(int)*(INT_ARRAY_SIZE/10));
+
+  // Compute final data
+  for (int i = 0; i < end; i++)
+  {
+   data[i] = data[i] + data[end-i-1];
+    result += data[i];
+  }
+
+  for (int i = 0; i < end; i++)
+  {
+      if (0) {
+          ptr[i] = data[i];
+      } else {
+      int success = __sync_bool_compare_and_swap ((ptr+i), dataOrig[i], data[i]);
+      if (!success) {
+          {
+            #pragma omp atomic write
+            issue_count =+ 1;
+          }
+      }
+      }
+  }
+
+  int* resultLoc = &(gl_taskData.taskResult[value]);
+  {
+    #pragma omp atomic write
+    *resultLoc = result;
+  }
+
+  (*(gl_taskData.counterFunction))(gl_taskData.globalDataPtr, ptr[0]);
+}
+
 
 void compareTaskResultWithReference()
 {
@@ -280,7 +333,7 @@ void clearCount()
 
 void printCount()
 {
-  /* printf("Task Exec Count = %d\n", task_exec_count); */
+  printf("Issue Count = %d\n", issue_count);
   /* printf("Locked Task Exec Count = %d\n", gl_taskData.counterValue); */
 }
 
