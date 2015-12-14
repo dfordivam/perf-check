@@ -8,6 +8,7 @@ void runTasks_OpenMP();
 void runTasks();
 void doInitialization(void* );
 
+void compareTaskResultWithReference();
 void profileTask(void (*ptr)());
 
 int main()
@@ -17,6 +18,7 @@ int main()
   profileTask(runTasks);
   printf("OpenMP\n");
   profileTask(runTasks_OpenMP);
+  compareTaskResultWithReference();
   printf("Done\n");
 }
 

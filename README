@@ -61,4 +61,7 @@ p8 : Compare and swap mechanism in each task to check if values are valid
     This resulted in 2.5x degradation in single thread performance
     and with 3 cores 2x slowdown compared to single-thread version without CAS.
 
-
+p9 : Added sort on execution tasks just before the iteration starts
+     This effectively removes the result mismatch issue
+    Without sort the speedup on 3 core is 2.15x
+    with sort 1.5x

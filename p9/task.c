@@ -23,7 +23,7 @@ typedef void * HsStablePtr;
 // So distribution of tasks to threads is random
 
 // Number of tasks in each delta
-#define NUM_TASKS 1000
+#define NUM_TASKS 10000
 // Number of deltas
 #define NUM_ITERATIONS 10000
 
@@ -72,6 +72,7 @@ void counterFunctionCSide(HsStablePtr ptr, int val);
 void counterFunctionLockedCSide(HsStablePtr ptr, int val);
 
 void initExecTaskCurrent(int);
+void sortExecTask();
 void initArrays();
 
 // Single threaded execution
@@ -100,6 +101,7 @@ void runTasks_OpenMP()
 /*** Spawn a parallel region explicitly scoping all variables ***/
   for (int j = 0; j < NUM_ITERATIONS ; j++){
       initExecTaskCurrent(j);
+      sortExecTask();
 
  #pragma omp parallel shared(chunk)
  #pragma omp single 
@@ -229,13 +231,13 @@ void initExecTaskCurrent(int j)
 
 int compareInt (const void * a, const void * b)
 {
-    if ( *(Int*)a <  *(Int*)b ) return -1;
-    if ( *(Int*)a == *(Int*)b ) return 0;
-    if ( *(Int*)a >  *(Int*)b ) return 1;
+    if ( *(int*)a <  *(int*)b ) return -1;
+    if ( *(int*)a == *(int*)b ) return 0;
+    if ( *(int*)a >  *(int*)b ) return 1;
 }
 void sortExecTask()
 {
-    qsort(gl_taskData.execTasksCurrent, NUM_TASKS, sizeof(int), compareInt)
+    qsort(gl_taskData.execTasksCurrent, NUM_TASKS, sizeof(int), compareInt);
 }
 
 // Task - This reads a part of the array
